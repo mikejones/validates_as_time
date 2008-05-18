@@ -59,7 +59,7 @@ or:
                     :too_late => "You cannot create a task that is due next year"
 
 
-=== Configuration options ===
+=== Configuration options
 
 * <tt>:default</tt>    - The default value to use when the attribute is empty. This default is only used to present the string value of the time attribute. Default is Time.now
 * <tt>:format</tt>     - The format used to present a Time object. Default is "%Y-%m-%d %H:%M". See the method Time.strftime for more formatting options.
