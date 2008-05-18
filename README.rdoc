@@ -1,0 +1,96 @@
+= validates_as_time
+
+A rails plugin to validate date time attributes which also supports setting time values
+via strings.
+
+This plugin helps with writing minimal code to add date time attributes to
+your models that are parsed using strings. The strings are parsed using the
+<tt>Time.parse</tt> method, or if you have required +chronic+ in your code it will use
+<tt>Chronic.parse</tt> for all kinds of extra niceness. For more information on chronic
+see http://chronic.rubyforge.org.
+
+In addition this plugin can be used to simply validate date time attributes
+with the usual options like <tt>:minimum</tt>, <tt>:maximum</tt>,
+<tt>:allow_nil</tt>, etc.
+
+
+== Install
+
+If you want a static version of this plugin you can download the tarball from:
+
+  
+
+or if you have git installed:
+
+  cd myapp
+  git clone git://github.com/lawrencepit/validates_as_time.git vendor/plugins/validates_as_time
+  rm -Rf vendor/plugins/validates_as_time/.git
+
+Or if you are using git, add as a submodule:
+
+  git submodule add git://github.com/lawrencepit/validates_as_time.git vendor/plugins/validates_as_time
+
+
+== Usage
+
+For example:
+
+  class Project < ActiveRecord::Base
+    validates_as_time :starts_at, :ends_at
+  end
+
+This also creates accessor methods named <tt>starts_at_string</tt> and <tt>ends_at_string</tt>.
+
+and in your view:
+
+  <%= f.text_field :starts_at_string %>
+  <%= f.text_field :ends_at_string %>
+
+You can also provide extra configuration parameters like you are used to with
+the standard rails validates methods. For example:
+
+  validates_as_time :starts_at, :message => "could not be parsed", 
+                    :allow_nil => false, :if => Proc.new { |user| user.signup_step > 2 })
+
+or:
+
+  validates_as_time :due_at, :minimum => Time.now, :maximum => "1 jan 2009", 
+                    :too_early => "You cannot create a task that is due before the current time", 
+                    :too_late => "You cannot create a task that is due next year"
+
+
+=== Configuration options ===
+
+* <tt>:default</tt>    - The default value to use when the attribute is empty. This default is only used to present the string value of the time attribute. Default is Time.now
+* <tt>:format</tt>     - The format used to present a Time object. Default is "%Y-%m-%d %H:%M". See the method Time.strftime for more formatting options.
+* <tt>:minimum</tt>    - The minimum value allowed for the attribute. You can provide a Time object or a string which will be parsed by Chronic.parse.
+* <tt>:maximum</tt>    - The maximum value allowed for the attribute. You can provide a Time object or a string which will be parsed by Chronic.parse.
+* <tt>:message</tt>    - A custom error message (default is: "is invalid")
+* <tt>:too_early</tt>  - A custom error message when the time falls before the <tt>:minimum</tt> given (default is: "cannot be before %s").
+* <tt>:too_late</tt>   - A custom error message when the time falls on or after the <tt>:maximum</tt> given (default is: "cannot be on or after %s").
+* <tt>:allow_nil</tt>  - Skip validation if attribute is +nil+ (default is: +true+).
+* <tt>:if</tt>         - Specifies a method, proc or string to call to determine if the validation should occur (e.g. <tt>:if => :allow_validation</tt>, or <tt>:if => Proc.new { |user| user.signup_step > 2 }</tt>). The method, proc or string should return or evaluate to a true or false value.
+* <tt>:unless</tt>     - Specifies a method, proc or string to call to determine if the validation should not occur (e.g. <tt>:unless => :skip_validation</tt>, or <tt>:unless => Proc.new { |user| user.signup_step <= 2 }</tt>).
+* <tt>:on</tt>         - Specifies when this validation is active (default is <tt>:save</tt>, other options <tt>:create</tt>, <tt>:update</tt>)
+
+You could also override these options globally by modifying :
+
+  ActiveRecord.Validations.ClassMethods.default_validates_as_time_configuration
+
+
+== Localization
+
+To localize the default messages, override:
+
+  ActiveRecord::Errors.default_error_messages[:invalid]
+  ActiveRecord::Errors.default_error_messages[:blank]
+  ActiveRecord::Errors.default_error_messages[:too_early]
+  ActiveRecord::Errors.default_error_messages[:too_late]
+
+The messages <tt>:too_early</tt> and <tt>:too_late</tt> can accept a placeholder %s which will be replaced with the given minimum resp. maximum value.
+
+
+== Authors
+
+Lawrence Pit (lawrence.pit@gmail.com)
+
