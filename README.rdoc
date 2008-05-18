@@ -73,9 +73,9 @@ or:
 * <tt>:unless</tt>     - Specifies a method, proc or string to call to determine if the validation should not occur (e.g. <tt>:unless => :skip_validation</tt>, or <tt>:unless => Proc.new { |user| user.signup_step <= 2 }</tt>).
 * <tt>:on</tt>         - Specifies when this validation is active (default is <tt>:save</tt>, other options <tt>:create</tt>, <tt>:update</tt>)
 
-You could also override these options globally by modifying :
+You could override these options globally by modifying the following hash:
 
-  ActiveRecord.Validations.ClassMethods.default_validates_as_time_configuration
+  ValidatesAsTime.default_configuration
 
 
 == Localization
@@ -84,13 +84,13 @@ To localize the default messages, override:
 
   ActiveRecord::Errors.default_error_messages[:invalid]
   ActiveRecord::Errors.default_error_messages[:blank]
-  ActiveRecord::Errors.default_error_messages[:too_early]
-  ActiveRecord::Errors.default_error_messages[:too_late]
+  ValidatesAsTime.default_configuration[:too_early]
+  ValidatesAsTime.default_configuration[:too_late]
 
 The messages <tt>:too_early</tt> and <tt>:too_late</tt> can accept a placeholder %s which will be replaced with the given minimum resp. maximum value.
 
 
-== Authors
+== Author
 
 Lawrence Pit (lawrence.pit@gmail.com)
 

@@ -1,22 +1,22 @@
-module ActiveRecord
-  class Errors
-    @@default_error_messages.merge!(:too_early => "cannot be before %s", :too_late => "cannot be on or after %s")
-  end
+class ValidatesAsTime
+  @@default_configuration = {
+    :default => Time.now,
+    :format => "%Y-%m-%d %H:%M",
+    :message => ActiveRecord::Errors.default_error_messages[:invalid],
+    :blank => ActiveRecord::Errors.default_error_messages[:blank],
+    :too_early => "cannot be before %s",
+    :too_late => "cannot be on or after %s",
+    :allow_nil => true
+  }
+  cattr_accessor :default_configuration
+end
 
+module ActiveRecord
   module Validations
     module ClassMethods
-      @@default_validates_as_time_configuration = {
-        :default => Time.now,
-        :format => "%Y-%m-%d %H:%M",
-        :message => ActiveRecord::Errors.default_error_messages[:invalid],
-        :blank => ActiveRecord::Errors.default_error_messages[:blank],
-        :too_early => ActiveRecord::Errors.default_error_messages[:too_early],
-        :too_late => ActiveRecord::Errors.default_error_messages[:too_late],
-        :allow_nil => true
-      }
-      
+
       def validates_as_time(*attr_names)
-        configuration = @@default_validates_as_time_configuration.merge(attr_names.extract_options!)
+        configuration = ValidatesAsTime.default_configuration.merge(attr_names.extract_options!)
         attr_names.each do |attr_name|
           class_eval(<<-EOS, __FILE__, __LINE__)
             def #{attr_name}_string
